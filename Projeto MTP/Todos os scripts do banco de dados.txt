@@ -1,0 +1,138 @@
+O projeto pensado inicialmente consistia em um sitema de análise de crédito, onde se tem um administrador que utiliza o sistema para as analises dos clientes, onde a analise consiste
+pegando o salario e as despesas mensais e efetuando uma calculo para saber o valor final do credito.
+
+Criação da tabela administrador
+
+CREATE TABLE administrador(
+	id_admin SERIAL PRIMARY KEY,
+	nome VARCHAR(255) NOT NULL,
+	usuario VARCHAR(100) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	senha VARCHAR(100) NOT NULL
+);
+
+
+Scripts usados na manipulação da tabela administrador
+
+
+SELECT * FROM administrador ("Seleciona todos os elementos da tabela administrador")
+
+INSERT INTO administrador(nome, usuario, email, senha) VALUES('+nome+', '+usuario+', '+email+', '+senha+') (insere os dados digitados na tabela)
+
+SELECT * FROM administrador WHERE usuario = '+usuario+' AND senha = '+senha+' (Busca na tabela um usuario e senha iguais ao que foi digitado)
+
+DELETE FROM administrador WHERE usuario = '+usuario+' AND senha = '+senha+' (Deleta o administrador a partir o usuario e senha inseridos)
+
+UPDATE administrador SET senha = '+senha+' WHERE usuario = '+usuario+' AND email = '+email+' (Altera a senha da tabela onde o usuario e email são iguais aos inseridos)
+
+SELECT * FROM administrador WHERE usuario = '+usuario+' (Busca dentro do banco o administrador com o usuario identico ao digitado)
+
+SELECT * FROM administrador id_admin WHERE usuario = '"+usuario+"' AND senha = '"+senha+"' (Seleciona o id do administrador que o usuario e senha são os que o usuario do sistema inseriu)
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Criação da tabela cliente
+
+
+CREATE TABLE cliente(
+	id_cliente SERIAL PRIMARY KEY,
+	id_admin INT, 
+	nome_cliente VARCHAR(255) NOT NULL,
+	cpf_cliente VARCHAR(255) NOT NULL,
+	rg_cliente VARCHAR(255) NOT NULL,
+	salario_cliente NUMERIC NOT NULL,
+	despesa_cliente NUMERIC NOT NULL,
+	credito_cliente NUMERIC NOT NULL,
+	FOREIGN KEY (id_admin) REFERENCES administrador (id_admin)
+);
+
+
+Scripts usados na manipulação da tabela cliente
+
+- INSERT INTO cliente(id_adminest, nome_cliente, cpf_cliente, rg_cliente, salario_cliente, despesa_cliente, credito_cliente) 
+VALUES('"+idAdmin+"', '"+cad.nome_cliente+"', '"+cad.cpf+"', '"+cad.rg+"', '"+cad.salario+"', '"+cad.despesa+"', '"+cad.credito+"') (Insere na tabela cliente os valores digitados no sistema)
+
+- SELECT * FROM cliente WHERE cpf_cliente = '"+cpf+"' (Busca na tabela se o CPF digitado no sistema está cadastrado no banco
+
+- SELECT * FROM cliente WHERE rg_cliente = '"+rg+"' (Busca na tabela cliente se o RG digitado no sistema está cadastrado no banco)
+
+- SELECT * FROM cliente WHERE "+info+" = '"+escolha+"' (Busca no banco de dados as informações do clientes a partir do cpf ou rg inserido, onde info recebe o nome da coluna do banco de dados)
+
+- UPDATE cliente SET nome_cliente = '"+cad.nome_cliente+"', cpf_cliente = '"+cad.cpf+"', rg_cliente = '"+cad.rg+"', salario_cliente = "+cad.salario+", despesa_cliente = "+cad.despesa+" 
+WHERE cpf_cliente = '"+cad.cpf+"' OR rg_cliente = '"+cad.rg+"'
+(Ele altera os dados da tabela cliente comparando a partir do RG ou CPF)
+
+= DELETE FROM cliente WHERE cpf_cliente = '"+cpf+"' OR rg_cliente = '"+rg+"' (Deleta os dados da tabela cliente conferindo o CPF ou o RG)
+
+- SELECT * FROM cliente WHERE credito_cliente < 0 (Seleciona os clientes onde o crédito está negativo)
+
+- SELECT * FROM cliente (Selecioina todos os elementos da tabela cliente)
+
+- SELECT cliente.*, cliente_consultado.credito_cliente FROM cliente LEFT JOIN cliente_consultado ON cliente.id_cliente = cliente_consultado.id_cliente 
+WHERE "+info+" = '"+escolha+"';
+(Ele pega todos os campos da tabela cliente e pega o seu respectivo credito na tabela cliente_consultado)
+
+- SELECT cliente.*, cliente_consultado.credito_cliente AS credito FROM cliente INNER JOIN cliente_consultado ON cliente.id_cliente = cliente_consultado.id_cliente 
+WHERE cliente_consultado.credito_cliente < 0
+(Ele coleta todos os dados da tabela cliente onde o seu credito seja negativo na tabela cliente_consultado)
+
+- SELECT cliente.*, cliente_consultado.credito_cliente AS credito FROM cliente INNER JOIN cliente_consultado ON cliente.id_cliente = cliente_consultado.id_cliente
+(Seleciona todos os campos da tabela cliente e o seu credito na tabela cliente_consultado)
+
+SELECT id_cliente FROM cliente WHERE cpf_cliente = '"+cpf+"' OR rg_cliente = '"+rg+"'
+(Seleciona o id do cliente a partir do Rg ou do CPF)
+
+
+OBS: Nos scripts, todos os nomes que estão dentro de aspas simples ('') e mais (++) são os valores coletados de dentro do sistema, então os valores que ali estão não é o que vai
+ser inserido nem coletado no banco de dados, mas sim o que o usuário inseriu no sistema.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Criação da tabela do cliente consultado
+
+CREATE TABLE cliente_consultado (
+    id_cliente_consultado SERIAL PRIMARY KEY,
+	id_cliente INT,
+    id_admin INT,
+    credito_cliente NUMERIC,
+    FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente),
+    FOREIGN KEY (id_admin) REFERENCES administrador (id_admin)
+);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Scripts utilizados na manipulação
+
+- INSERT INTO cliente (id_admin, nome_cliente, cpf_cliente, rg_cliente, salario_cliente, despesa_cliente)
+VALUES (35, 'Bruno', '13410520104', '6495127', '1500', '1300')
+
+- UPDATE cliente_consultado
+SET credito_cliente = 200
+WHERE id_cliente = 1
+
+- INSERT INTO cliente_consultado (id_cliente, id_admin)
+SELECT c.id_cliente, a.id_admin
+FROM cliente c
+JOIN administrador a ON a.id_admin = 35
+WHERE c.id_cliente = 1;
+
+- SELECT cliente.cpf_cliente, cliente.rg_cliente, cliente_consultado.credito_cliente
+FROM cliente
+INNER JOIN cliente_consultado ON cliente.id_cliente = cliente_consultado.id_cliente;
+
+- INSERT INTO cliente_consultado(id_cliente, id_admin, credito_cliente) 
+VALUES('"+idCliente+"' ,'"+idAdmin+"', '"+credito+"')
+(Insere na tabela cliente_cadastrado o id do cliente, o id do administrador e o credito do cliente)
+
+- UPDATE cliente_consultado SET credito_cliente = "+credito+" WHERE id_cliente = "+id+"
+(Altera o credito da tebela cliente_consultado buscando pelo id)
+
+- SELECT cliente.*, cliente_consultado.credito_cliente FROM cliente LEFT JOIN cliente_consultado ON cliente.id_cliente = cliente_consultado.id_cliente 
+WHERE "+info+" = '"+escolha+"'
+(Ela faz uma busca de todos os campos da tabela cliente e o compo credito da tabela cliente_consultado)
+
+- DELETE FROM cliente_consultado WHERE id_cliente = "+idCliente+"
+(Delete o cliente da tabela cliente_consultado a partir do id do cliente)
+
